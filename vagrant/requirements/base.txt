@@ -1,0 +1,4 @@
+django-debug-toolbar
+django-sslserver==0.14
+mock
+git+https://github.com/inducer/pudb.git#egg=pudb
