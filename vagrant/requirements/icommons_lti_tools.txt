@@ -1,6 +1,6 @@
 -r base.txt
 
 -e /home/vagrant/canvas_python_sdk
--e /home/vagrant/django-commons-common
--e /home/vagrant/django-commons-ui
+-e /home/vagrant/django-icommons-common
+-e /home/vagrant/django-icommons-ui
 -e /home/vagrant/django-auth-lti
