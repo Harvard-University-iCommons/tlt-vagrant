@@ -245,6 +245,22 @@ exec {'create-virtualenv':
     creates => '/home/vagrant/.virtualenvs/icommons_lti_tools',
 }
 
+# Add virtualenvwrapper postactivate hook to customize the virtualenv
+file {'/home/vagrant/.virtualenvs/postactivate':
+    owner => 'vagrant',
+    content => '
+#!/bin/bash
+# This hook is sourced after every virtualenv is activated.
+
+# Show git repo branch and active virtualenv at bash prompt
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
+}
+PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w(`basename \"$VIRTUAL_ENV\"`)\$(parse_git_branch) $ "
+    ',
+    require => Exec['create-virtualenv'],
+}
+
 # Activate icommons_lti_tools virtualenv upon login
 # Add git branch to terminal prompt
 file {'/home/vagrant/.bash_profile':
@@ -252,12 +268,6 @@ file {'/home/vagrant/.bash_profile':
     content => '
 echo "Activating python virtual environment \"icommons_lti_tools\""
 workon icommons_lti_tools
-        
-# Show git repo branch at bash prompt
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
-}
-PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
     ',
-    require => Exec['create-virtualenv'],
+    require => File['/home/vagrant/.virtualenvs/postactivate'],
 }
