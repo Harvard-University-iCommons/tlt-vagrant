@@ -252,6 +252,8 @@ file {'/home/vagrant/.virtualenvs/postactivate':
 #!/bin/bash
 # This hook is sourced after every virtualenv is activated.
 
+export DJANGO_SETTINGS_MODULE=`basename $VIRTUAL_ENV`.settings.local
+
 # Show git repo branch and active virtualenv at bash prompt
 parse_git_branch() {
     git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
