@@ -105,6 +105,33 @@ package {'sqlite3':
     require => Exec['apt-get-update'],
 }
 
+package {'mongodb-org':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+# Install Postgresql
+package {'postgresql':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+package {'postgresql-contrib':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+# Create vagrant user for postgresql
+exec {'create-postgresql-user':
+    require => Package['postgresql'],
+    command => 'sudo -u postgres createuser --superuser $USER'
+}
+
+# Create vagrant db for postgresql
+exec {'create-postgresql-db':
+    require => Exec['create-postgresql-user'],
+    command => 'sudo -u postgres createdb $USER'
+}
 
 # Install the Oracle instant client
 
@@ -214,7 +241,7 @@ exec {'create-virtualenv':
     group => 'vagrant',
     require => [ Package['virtualenvwrapper'], File['/etc/profile.d/oracle.sh'], File['/etc/profile.d/venvwrapper.sh'] ],
     environment => ["ORACLE_HOME=/opt/oracle/instantclient_11_2","LD_LIBRARY_PATH=/opt/oracle/instantclient_11_2","HOME=/home/vagrant","WORKON_HOME=/home/vagrant/.virtualenvs"],
-    command => '/vagrant/vagrant/venv_bootstrap.sh',
+    command => '/vagrant/vagrant/bin/venv_bootstrap.sh',
     creates => '/home/vagrant/.virtualenvs/icommons_lti_tools',
 }
 

@@ -89,6 +89,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   puppet.manifest_file  = "site.pp"
   # end
 
+  # Allow ssh to work during provisioning
+  config.vm.provision :shell do |shell|
+    shell.inline = "touch $1 && chmod 0440 $1 && echo $2 > $1"
+    shell.args = %q{/etc/sudoers.d/root_ssh_agent "Defaults    env_keep += \"SSH_AUTH_SOCK\""}
+  end
+
+  # Prepare for mongodb installation
+  config.vm.provision :shell do |shell|
+    shell.inline = "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10;
+                    echo 'deb http://repo.mongodb.org/apt/ubuntu '$(lsb_release -sc)'/mongodb-org/3.0 multiverse' | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list"
+  end
+
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "vagrant/manifests"
   end

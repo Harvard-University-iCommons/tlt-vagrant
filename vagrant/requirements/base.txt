@@ -1,4 +1,5 @@
-django-debug-toolbar
-django-sslserver==0.14
-mock
-git+https://github.com/inducer/pudb.git#egg=pudb
+-e /home/vagrant/canvas_python_sdk
+-e /home/vagrant/django-auth-lti
+-e /home/vagrant/canvas_python_sdk
+-e /home/vagrant/django-icommons-common
+-e /home/vagrant/django-icommons-ui
