@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
   config.vm.synced_folder "../icommons_lti_tools", "/home/vagrant/icommons_lti_tools", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../ab-testing-tool", "/home/vagrant/ab-testing-tool", create: true, owner: "vagrant", group: "vagrant"
+  config.vm.synced_folder "../ab_testing_tool", "/home/vagrant/ab_testing_tool", create: true, owner: "vagrant", group: "vagrant"
   config.vm.synced_folder "../django-icommons-ui", "/home/vagrant/django-icommons-ui", create: true, owner: "vagrant", group: "vagrant"
   config.vm.synced_folder "../canvas_python_sdk", "/home/vagrant/canvas_python_sdk", create: true, owner: "vagrant", group: "vagrant"
   config.vm.synced_folder "../django-auth-lti", "/home/vagrant/django-auth-lti", create: true, owner: "vagrant", group: "vagrant"

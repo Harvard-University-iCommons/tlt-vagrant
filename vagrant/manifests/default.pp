@@ -124,13 +124,13 @@ package {'postgresql-contrib':
 # Create vagrant user for postgresql
 exec {'create-postgresql-user':
     require => Package['postgresql'],
-    command => 'sudo -u postgres createuser --superuser $USER'
+    command => 'sudo -u postgres createuser --superuser vagrant'
 }
 
 # Create vagrant db for postgresql
 exec {'create-postgresql-db':
     require => Exec['create-postgresql-user'],
-    command => 'sudo -u postgres createdb $USER'
+    command => 'sudo -u postgres createdb vagrant'
 }
 
 # Install the Oracle instant client

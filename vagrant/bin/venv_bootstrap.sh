@@ -14,7 +14,7 @@ pip install -r /home/vagrant/icommons_lti_tools/icommons_lti_tools/requirements/
 pip install -r /vagrant/vagrant/requirements/base.txt
 
 # Make ab-testing-tool virtualenv
-mkvirtualenv -a /home/vagrant/ab-testing-tool ab-testing-tool
-workon ab-testing-tool
-pip install -r /home/vagrant/ab-testing-tool/ab_testing_tool/requirements/local.txt
+mkvirtualenv -a /home/vagrant/ab_testing_tool ab_testing_tool
+workon ab_testing_tool
+pip install -r /home/vagrant/ab_testing_tool/ab_testing_tool/requirements/local.txt
 pip install -r /vagrant/vagrant/requirements/base.txt
