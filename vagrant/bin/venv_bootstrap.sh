@@ -4,9 +4,6 @@ export HOME=/home/vagrant
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 
-ssh -o StrictHostKeyChecking=no git@bitbucket.org;
-ssh -o StrictHostKeyChecking=no git@github.com;
-
 # Make icommons_lti_tools virtualenv
 mkvirtualenv -a /home/vagrant/icommons_lti_tools icommons_lti_tools
 workon icommons_lti_tools
