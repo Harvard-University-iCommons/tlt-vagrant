@@ -298,6 +298,12 @@ PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w(`basename \"$VIRTUAL_ENV\"`)\$(p
     require => Exec['create-virtualenv'],
 }
 
+file {'/home/vagrant/.git_completion.sh':
+    ensure => present,
+    source => '/vagrant/bin/.git_completion.sh',
+    mode => '755'
+}
+
 # Activate icommons_lti_tools virtualenv upon login
 # Add git branch to terminal prompt
 file {'/home/vagrant/.bash_profile':
@@ -305,6 +311,10 @@ file {'/home/vagrant/.bash_profile':
     content => '
 echo "Activating python virtual environment \"icommons_lti_tools\""
 workon icommons_lti_tools
+
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
     ',
-    require => File['/home/vagrant/.virtualenvs/postactivate'],
+    require => [ File['/home/vagrant/.virtualenvs/postactivate'], File['/home/vagrant/.git_completion.sh'] ]
 }
