@@ -213,6 +213,30 @@ file {'/etc/profile.d/oracle.sh':
     require => Exec['instantclient-basiclite'],
 }
 
+# Install node
+exec {'nodejs_setup':
+    provider => 'shell',
+    user => 'vagrant',
+    group => 'vagrant',
+    command => 'curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -',
+    require => Package['curl']
+}
+
+package {'nodejs':
+    ensure => installed,
+    install_options => ['-y'],
+    require => Exec['nodejs_setup']
+}
+
+# Install less
+exec {'install_less':
+    provider => 'shell',
+    user => 'vagrant',
+    group => 'vagrant',
+    command => 'sudo npm install -g less',
+    require => Package['nodejs']
+}
+
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
 # pip won't try to prompt on the terminal to accept it
 file {'/home/vagrant/.ssh':
@@ -300,7 +324,7 @@ PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w(`basename \"$VIRTUAL_ENV\"`)\$(p
 
 file {'/home/vagrant/.git_completion.sh':
     ensure => present,
-    source => '/vagrant/bin/.git_completion.sh',
+    source => '/vagrant/vagrant/bin/.git_completion.sh',
     mode => '755'
 }
 
