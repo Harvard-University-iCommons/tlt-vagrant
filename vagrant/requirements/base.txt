@@ -1,5 +1,5 @@
--e /home/vagrant/canvas_python_sdk
--e /home/vagrant/django-auth-lti
--e /home/vagrant/canvas_python_sdk
--e /home/vagrant/django-icommons-common
--e /home/vagrant/django-icommons-ui
+-e /home/vagrant/tlt/canvas_python_sdk
+-e /home/vagrant/tlt/django-auth-lti
+-e /home/vagrant/tlt/canvas_python_sdk
+-e /home/vagrant/tlt/django-icommons-common
+-e /home/vagrant/tlt/django-icommons-ui

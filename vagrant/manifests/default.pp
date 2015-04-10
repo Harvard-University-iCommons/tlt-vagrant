@@ -292,15 +292,21 @@ exec {'create-virtualenv':
 }
 
 # Set up git hooks
-file {'/home/vagrant/icommons_lti_tools/.git/hooks/pre-commit':
+file {'/home/vagrant/tlt/icommons_lti_tools/.git/hooks/pre-commit':
     ensure => link,
-    target => '/home/vagrant/icommons_lti_tools/.git_template/hooks/pre-commit',
+    target => '/home/vagrant/tlt/icommons_lti_tools/.git_template/hooks/pre-commit',
     require => Exec['create-virtualenv'],
 }
 
-file {'/home/vagrant/ab_testing_tool/.git/hooks/pre-commit':
+file {'/home/vagrant/tlt/lti_emailer/.git/hooks/pre-commit':
     ensure => link,
-    target => '/home/vagrant/ab_testing_tool/.git_template/hooks/pre-commit',
+    target => '/home/vagrant/tlt/lti_emailer/.git_template/hooks/pre-commit',
+    require => Exec['create-virtualenv'],
+}
+
+file {'/home/vagrant/tlt/ab_testing_tool/.git/hooks/pre-commit':
+    ensure => link,
+    target => '/home/vagrant/tlt/ab_testing_tool/.git_template/hooks/pre-commit',
     require => Exec['create-virtualenv'],
 }
 

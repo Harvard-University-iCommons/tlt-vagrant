@@ -45,12 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  config.vm.synced_folder "../icommons_lti_tools", "/home/vagrant/icommons_lti_tools", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../ab_testing_tool", "/home/vagrant/ab_testing_tool", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../django-icommons-ui", "/home/vagrant/django-icommons-ui", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../canvas_python_sdk", "/home/vagrant/canvas_python_sdk", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../django-auth-lti", "/home/vagrant/django-auth-lti", create: true, owner: "vagrant", group: "vagrant"
-  config.vm.synced_folder "../django-icommons-common", "/home/vagrant/django-icommons-common", create: true, owner: "vagrant", group: "vagrant"
+  config.vm.synced_folder "../../tlt", "/home/vagrant/tlt", create: true, owner: "vagrant", group: "vagrant"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
