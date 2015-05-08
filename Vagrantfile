@@ -46,7 +46,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  config.vm.synced_folder "../../tlt", "/home/vagrant/tlt", create: true, owner: "vagrant", group: "vagrant"
+  config.vm.synced_folder "../../tlt", "/home/vagrant/tlt",
+    type: "rsync", rsync__args: ["--verbose", "--archive", "--delete", "-z"],
+    create: true, owner: "vagrant", group: "vagrant"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
