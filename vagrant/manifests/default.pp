@@ -90,6 +90,16 @@ package {'openssl':
     require => Exec['apt-get-update'],
 }
 
+package {'nfs-common':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+package {'portmap':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
 package {'zlib1g-dev':
     ensure => latest,
     require => Exec['apt-get-update'],
