@@ -28,7 +28,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network :private_network, type: "dhcp"
+  # Uncomment when using NFS synced folders
+  # config.vm.network :private_network, type: "dhcp"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -46,7 +47,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  config.vm.synced_folder "../../tlt", "/home/vagrant/tlt", :nfs => true, create: true
+  # Use nfs synced folder when working on PINAuthBackend projects
+  # config.vm.synced_folder "../../tlt", "/home/vagrant/tlt", :nfs => true, create: true
+  config.vm.synced_folder "../../tlt", "/home/vagrant/tlt", create: true, owner: "vagrant", group: "vagrant"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -66,6 +69,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "virtualbox" do |v|
       v.memory = 2048
       v.cpus = 2
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
