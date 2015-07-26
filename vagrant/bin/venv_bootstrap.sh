@@ -16,6 +16,12 @@ workon lti_emailer
 pip install -r /home/vagrant/tlt/lti_emailer/lti_emailer/requirements/local.txt
 pip install -r /vagrant/vagrant/requirements/base.txt
 
+# Make canvas_course_creation virtualenv
+mkvirtualenv -a /home/vagrant/tlt/canvas_course_creation canvas_course_creation
+workon canvas_course_creation
+pip install -r /home/vagrant/tlt/canvas_course_creation/canvas_course_creation/requirements/local.txt
+pip install -r /vagrant/vagrant/requirements/base.txt
+
 # Make ab-testing-tool virtualenv
 mkvirtualenv -a /home/vagrant/tlt/ab_testing_tool ab_testing_tool
 # workon ab_testing_tool
