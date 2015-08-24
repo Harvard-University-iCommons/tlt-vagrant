@@ -260,6 +260,16 @@ exec {'install_less':
     logoutput => true
 }
 
+# Install coffeescript
+exec {'install_coffeescript':
+    provider => 'shell',
+    user => 'vagrant',
+    group => 'vagrant',
+    command => 'sudo npm install -g coffee-script',
+    require => Package['nodejs'],
+    logoutput => true
+}
+
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
 # pip won't try to prompt on the terminal to accept it
 file {'/home/vagrant/.ssh':

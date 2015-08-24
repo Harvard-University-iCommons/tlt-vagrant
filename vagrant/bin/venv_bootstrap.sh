@@ -22,6 +22,12 @@ workon canvas_course_creation
 pip install -r /home/vagrant/tlt/canvas_course_creation/canvas_course_creation/requirements/local.txt
 pip install -r /vagrant/vagrant/requirements/base.txt
 
+# Make isites_migration virtualenv
+mkvirtualenv -a /home/vagrant/tlt/isites_migration isites_migration
+workon isites_migration
+pip install -r /home/vagrant/tlt/isites_migration/isites_migration/requirements/local.txt
+pip install -r /vagrant/vagrant/requirements/base.txt
+
 # Make ab-testing-tool virtualenv
 mkvirtualenv -a /home/vagrant/tlt/ab_testing_tool ab_testing_tool
 # workon ab_testing_tool
