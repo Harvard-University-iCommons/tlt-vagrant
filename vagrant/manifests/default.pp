@@ -257,6 +257,7 @@ exec {'install_less':
     group => 'vagrant',
     command => 'sudo npm install -g less',
     require => Package['nodejs'],
+    creates => '/usr/bin/lessc',
 }
 
 # Install coffeescript
@@ -266,6 +267,7 @@ exec {'install_coffeescript':
     group => 'vagrant',
     command => 'sudo npm install -g coffee-script',
     require => Package['nodejs'],
+    creates => '/usr/bin/coffee',
 }
 
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
@@ -311,6 +313,22 @@ file {'/etc/profile.d/venvwrapper.sh':
     require => Package['virtualenvwrapper'],
 }
 
+file {'/home/vagrant/.virtualenvs':
+    ensure => directory,
+    owner => 'vagrant',
+}
+
+file {'/home/vagrant/.virtualenvs/postactivate':
+    owner => 'vagrant',
+    content => '
+#!/bin/bash
+# This hook is sourced after every virtualenv is activated.
+
+export DJANGO_SETTINGS_MODULE=`basename $VIRTUAL_ENV`.settings.local
+    ',
+    require => File['/home/vagrant/.virtualenvs'],
+}
+
 define create_virtualenv($project) {
     exec {
         "create_virtualenv_${project}":
@@ -331,6 +349,7 @@ define create_virtualenv($project) {
             ],
             command => "/vagrant/vagrant/bin/venv_bootstrap.sh ${project}",
             creates => "/home/vagrant/.virtualenvs/${project}",
+            onlyif => "test -d /home/vagrant/tlt/${project}",
     }
 }
 
@@ -352,4 +371,30 @@ create_virtualenv {
 create_virtualenv {
     'lti_emailer_virtualenv':
         project => 'lti_emailer',
+}
+
+create_virtualenv {
+    'isites_migration_virtualenv':
+        project => 'isites_migration',
+}
+
+create_virtualenv {
+    'ab_testing_tool_virtualenv':
+        project => 'ab_testing_tool',
+}
+
+create_virtualenv {
+    'canvas_course_creation_virtualenv':
+        project => 'canvas_course_creation',
+}
+
+file {'/home/vagrant/.bash_profile':
+    owner => 'vagrant',
+    content => '
+# Show git repo branch at bash prompt
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
+}
+PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
+    ',
 }
