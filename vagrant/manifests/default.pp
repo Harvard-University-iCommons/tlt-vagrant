@@ -10,7 +10,6 @@ Exec {
     '/sbin',
     '/bin',
     ],
-    logoutput => true,
 }
 
 # Refresh the catalog of repositories from which packages can be installed:
@@ -115,6 +114,11 @@ package {'libsqlite3-dev':
     require => Exec['apt-get-update'],
 }
 
+package{'libffi-dev':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
 package {'sqlite3':
     ensure => latest,
     require => Exec['apt-get-update'],
@@ -123,6 +127,22 @@ package {'sqlite3':
 package {'mongodb-org':
     ensure => latest,
     require => Exec['apt-get-update'],
+}
+
+package {'vim':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+exec {'nodesource':
+    command => 'curl -sL https://deb.nodesource.com/setup_0.12 | bash -',
+    creates => '/etc/apt/sources.list.d/nodesource.list',
+    require => Package['curl'],
+}
+
+package {'nodejs':
+    ensure => latest,
+    require => [Exec['apt-get-update'], Exec['nodesource']],
 }
 
 # Install Postgresql
@@ -139,15 +159,15 @@ package {'postgresql-contrib':
 # Create vagrant user for postgresql
 exec {'create-postgresql-user':
     require => Package['postgresql'],
-    command => 'sudo -u postgres createuser --superuser vagrant',
-    logoutput => true
+    command => 'sudo -u postgres psql -c "CREATE ROLE vagrant SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN PASSWORD \'vagrant\'"',
+    unless => 'sudo -u postgres psql -qt -c "select 1 from pg_roles where rolname=\'vagrant\'" | grep -q 1',
 }
 
 # Create vagrant db for postgresql
 exec {'create-postgresql-db':
     require => Exec['create-postgresql-user'],
     command => 'sudo -u postgres createdb vagrant',
-    logoutput => true
+    unless => 'sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -wq vagrant',
 }
 
 # Install the Oracle instant client
@@ -160,7 +180,6 @@ define download ($uri, $timeout = 300) {
           creates => $name,
           timeout => $timeout,
           require => Package['wget'],
-          logoutput => true
   }
 }
 
@@ -194,7 +213,6 @@ exec {'instantclient-basiclite':
     cwd => '/opt/oracle',
     command => 'unzip /tmp/instantclient-basiclite-linux.x64-11.2.0.3.0.zip',
     creates => '/opt/oracle/instantclient_11_2/BASIC_LITE_README',
-    logoutput => true
 }
 
 exec {'instantclient-sqlplus':
@@ -202,7 +220,6 @@ exec {'instantclient-sqlplus':
     cwd => '/opt/oracle',
     command => 'unzip /tmp/instantclient-sqlplus-linux.x64-11.2.0.3.0.zip',
     creates => '/opt/oracle/instantclient_11_2/sqlplus',
-    logoutput => true
 }
 
 exec {'instantclient-sdk':
@@ -210,7 +227,6 @@ exec {'instantclient-sdk':
     cwd => '/opt/oracle',
     command => 'unzip /tmp/instantclient-sdk-linux.x64-11.2.0.3.0.zip',
     creates => '/opt/oracle/instantclient_11_2/sdk',
-    logoutput => true
 }
 
 # Create some symlinks that are missing:
@@ -234,22 +250,6 @@ file {'/etc/profile.d/oracle.sh':
     require => Exec['instantclient-basiclite'],
 }
 
-# Install node
-exec {'nodejs_setup':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    command => 'curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -',
-    require => Package['curl'],
-    logoutput => true
-}
-
-package {'nodejs':
-    ensure => installed,
-    install_options => ['-y'],
-    require => Exec['nodejs_setup']
-}
-
 # Install less
 exec {'install_less':
     provider => 'shell',
@@ -257,7 +257,7 @@ exec {'install_less':
     group => 'vagrant',
     command => 'sudo npm install -g less',
     require => Package['nodejs'],
-    logoutput => true
+    creates => '/usr/bin/lessc',
 }
 
 # Install coffeescript
@@ -267,7 +267,7 @@ exec {'install_coffeescript':
     group => 'vagrant',
     command => 'sudo npm install -g coffee-script',
     require => Package['nodejs'],
-    logoutput => true
+    creates => '/usr/bin/coffee',
 }
 
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
@@ -284,7 +284,6 @@ exec {'known_hosts':
     command => 'ssh-keyscan github.com >> /home/vagrant/.ssh/known_hosts',
     unless => 'grep -sq github.com /home/vagrant/.ssh/known_hosts',
     require => [ File['/home/vagrant/.ssh'], ],
-    logoutput => true
 }
 
 file {'/home/vagrant/.ssh/known_hosts':
@@ -314,139 +313,11 @@ file {'/etc/profile.d/venvwrapper.sh':
     require => Package['virtualenvwrapper'],
 }
 
-# Clone git repositories
-exec {'clone_icommons_lti_tools':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/icommons_lti_tools.git /home/vagrant/tlt/icommons_lti_tools',
-    creates => '/home/vagrant/tlt/icommons_lti_tools',
-    logoutput => true
+file {'/home/vagrant/.virtualenvs':
+    ensure => directory,
+    owner => 'vagrant',
 }
 
-exec {'clone_lti_emailer':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/lti_emailer.git /home/vagrant/tlt/lti_emailer',
-    creates => '/home/vagrant/tlt/lti_emailer',
-    logoutput => true
-}
-
-exec {'clone_ab-testing-tool':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:penzance/ab-testing-tool.git /home/vagrant/tlt/ab_testing_tool',
-    creates => '/home/vagrant/tlt/ab_testing_tool',
-    logoutput => true
-}
-
-exec {'clone_icommons_ext_tools':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/icommons_ext_tools.git /home/vagrant/tlt/icommons_ext_tools',
-    creates => '/home/vagrant/tlt/icommons_ext_tools',
-    logoutput => true
-}
-
-exec {'clone_icommons_tools':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/icommons_tools.git /home/vagrant/tlt/icommons_tools',
-    creates => '/home/vagrant/tlt/icommons_tools',
-    logoutput => true
-}
-
-exec {'clone_canvas_python_sdk':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:penzance/canvas_python_sdk.git /home/vagrant/tlt/canvas_python_sdk',
-    creates => '/home/vagrant/tlt/canvas_python_sdk',
-    logoutput => true
-}
-
-exec {'clone_django-auth-lti':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/django-auth-lti.git /home/vagrant/tlt/django-auth-lti',
-    creates => '/home/vagrant/tlt/django-auth-lti',
-    logoutput => true
-}
-
-exec {'clone_django-canvas-course-site-wizard':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/django-canvas-course-site-wizard.git /home/vagrant/tlt/django-canvas-course-site-wizard',
-    creates => '/home/vagrant/tlt/django-canvas-course-site-wizard',
-    logoutput => true
-}
-
-exec {'clone_django-icommons-common':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/django-icommons-common.git /home/vagrant/tlt/django-icommons-common',
-    creates => '/home/vagrant/tlt/django-icommons-icommon',
-    logoutput => true
-}
-
-exec {'clone_django-icommons-ui':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => Package['git'],
-    command => 'git clone git@github.com:Harvard-University-iCommons/django-icommons-ui.git /home/vagrant/tlt/django-icommons-ui',
-    creates => '/home/vagrant/tlt/django-icommons-ui',
-    logoutput => true
-}
-
-# Create a virtualenv for <project_name>
-exec {'create-virtualenv':
-    provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    require => [ Package['virtualenvwrapper'], File['/etc/profile.d/oracle.sh'], File['/etc/profile.d/venvwrapper.sh'], Exec['known_hosts'] ],
-    environment => ["ORACLE_HOME=/opt/oracle/instantclient_11_2","LD_LIBRARY_PATH=/opt/oracle/instantclient_11_2","HOME=/home/vagrant","WORKON_HOME=/home/vagrant/.virtualenvs"],
-    command => '/vagrant/vagrant/bin/venv_bootstrap.sh',
-    creates => '/home/vagrant/.virtualenvs/icommons_lti_tools',
-    logoutput => true
-}
-
-# Set up git hooks
-file {'/home/vagrant/tlt/icommons_lti_tools/.git/hooks/pre-commit':
-    ensure => link,
-    target => '/home/vagrant/tlt/icommons_lti_tools/.git_template/hooks/pre-commit',
-    require => Exec['create-virtualenv'],
-}
-
-file {'/home/vagrant/tlt/lti_emailer/.git/hooks/pre-commit':
-    ensure => link,
-    target => '/home/vagrant/tlt/lti_emailer/.git_template/hooks/pre-commit',
-    require => Exec['create-virtualenv'],
-}
-
-file {'/home/vagrant/tlt/ab_testing_tool/.git/hooks/pre-commit':
-    ensure => link,
-    target => '/home/vagrant/tlt/ab_testing_tool/.git_template/hooks/pre-commit',
-    require => Exec['create-virtualenv'],
-}
-
-# Add virtualenvwrapper postactivate hook to customize the virtualenv
 file {'/home/vagrant/.virtualenvs/postactivate':
     owner => 'vagrant',
     content => '
@@ -454,33 +325,90 @@ file {'/home/vagrant/.virtualenvs/postactivate':
 # This hook is sourced after every virtualenv is activated.
 
 export DJANGO_SETTINGS_MODULE=`basename $VIRTUAL_ENV`.settings.local
-
-# Show git repo branch and active virtualenv at bash prompt
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
-}
-PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w(`basename \"$VIRTUAL_ENV\"`)\$(parse_git_branch) $ "
     ',
-    require => Exec['create-virtualenv'],
+    require => File['/home/vagrant/.virtualenvs'],
+}
+
+define create_virtualenv($project) {
+    exec {
+        "create_virtualenv_${project}":
+            provider => 'shell',
+            user => 'vagrant',
+            group => 'vagrant',
+            require => [
+                Package['virtualenvwrapper'],
+                File['/etc/profile.d/oracle.sh'],
+                File['/etc/profile.d/venvwrapper.sh'],
+                Exec['known_hosts'],
+            ],
+            environment => [
+                'HOME=/home/vagrant',
+                'LD_LIBRARY_PATH=/opt/oracle/instantclient_11_2',
+                'ORACLE_HOME=/opt/oracle/instantclient_11_2',
+                'WORKON_HOME=/home/vagrant/.virtualenvs',
+            ],
+            command => "/vagrant/vagrant/bin/venv_bootstrap.sh ${project}",
+            creates => "/home/vagrant/.virtualenvs/${project}",
+            onlyif => "test -d /home/vagrant/tlt/${project}",
+    }
+}
+
+create_virtualenv {
+    'icommons_lti_tools_virtualenv':
+        project => 'icommons_lti_tools',
+}
+
+create_virtualenv {
+    'icommons_tools_virtualenv':
+        project => 'icommons_tools',
+}
+
+create_virtualenv {
+    'icommons_ext_tools_virtualenv':
+        project => 'icommons_ext_tools',
+}
+
+create_virtualenv {
+    'lti_emailer_virtualenv':
+        project => 'lti_emailer',
+}
+
+create_virtualenv {
+    'isites_migration_virtualenv':
+        project => 'isites_migration',
+}
+
+create_virtualenv {
+    'ab_testing_tool_virtualenv':
+        project => 'ab_testing_tool',
+}
+
+create_virtualenv {
+    'canvas_course_creation_virtualenv':
+        project => 'canvas_course_creation',
 }
 
 file {'/home/vagrant/.git_completion.sh':
-    ensure => present,
+    owner => 'vagrant',
     source => '/vagrant/vagrant/bin/.git_completion.sh',
-    mode => '755'
 }
 
-# Activate icommons_lti_tools virtualenv upon login
-# Add git branch to terminal prompt
 file {'/home/vagrant/.bash_profile':
     owner => 'vagrant',
     content => '
-echo "Activating python virtual environment \"icommons_lti_tools\""
-workon icommons_lti_tools
+if [ -f ~/.git_completion.bash ]; then
+  . ~/.git_completion.bash
+fi
 
-if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
+# Show git repo branch at bash prompt
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
+}
+PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
+
+# if we got a project in $TLT_PROJECT, activate its virtualenv
+if [[ "$TLT_PROJECT" != "" && -d ~/tlt/$TLT_PROJECT ]]; then
+        workon $TLT_PROJECT
 fi
     ',
-    require => [ File['/home/vagrant/.virtualenvs/postactivate'], File['/home/vagrant/.git_completion.sh'] ]
 }

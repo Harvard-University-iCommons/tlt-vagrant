@@ -4,44 +4,7 @@ export HOME=/home/vagrant
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 
-# Make icommons_lti_tools virtualenv
-mkvirtualenv -a /home/vagrant/tlt/icommons_lti_tools icommons_lti_tools
-workon icommons_lti_tools
-pip install -r /home/vagrant/tlt/icommons_lti_tools/icommons_lti_tools/requirements/local.txt
-pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make lti_emailer virtualenv
-mkvirtualenv -a /home/vagrant/tlt/lti_emailer lti_emailer
-workon lti_emailer
-pip install -r /home/vagrant/tlt/lti_emailer/lti_emailer/requirements/local.txt
-pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make canvas_course_creation virtualenv
-mkvirtualenv -a /home/vagrant/tlt/canvas_course_creation canvas_course_creation
-workon canvas_course_creation
-pip install -r /home/vagrant/tlt/canvas_course_creation/canvas_course_creation/requirements/local.txt
-pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make isites_migration virtualenv
-mkvirtualenv -a /home/vagrant/tlt/isites_migration isites_migration
-workon isites_migration
-pip install -r /home/vagrant/tlt/isites_migration/isites_migration/requirements/local.txt
-pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make ab-testing-tool virtualenv
-mkvirtualenv -a /home/vagrant/tlt/ab_testing_tool ab_testing_tool
-# workon ab_testing_tool
-# pip install -r /home/vagrant/tlt/ab_testing_tool/ab_testing_tool/requirements/local.txt
-# pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make icommons_tools virtualenv
-mkvirtualenv -a /home/vagrant/tlt/icommons_tools icommons_tools
-# workon icommons_tools
-# pip install -r /home/vagrant/tlt/icommons_tools/icommons_tools/requirements/local.txt
-# pip install -r /vagrant/vagrant/requirements/base.txt
-
-# Make icommons_ext_tools virtualenv
-mkvirtualenv -a /home/vagrant/tlt/icommons_ext_tools icommons_ext_tools
-# workon icommons_ext_tools
-# pip install -r /home/vagrant/tlt/icommons_ext_tools/icommons_ext_tools/requirements/local.txt
-# pip install -r /vagrant/vagrant/requirements/base.txt
+mkvirtualenv -a /home/vagrant/tlt/$1 $1 \
+	&& workon $1 \
+	&& pip install -r /home/vagrant/tlt/${1}/${1}/requirements/local.txt \
+	&& pip install -r /vagrant/vagrant/requirements/base.txt
