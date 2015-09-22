@@ -388,13 +388,27 @@ create_virtualenv {
         project => 'canvas_course_creation',
 }
 
+file {'/home/vagrant/.git_completion.sh':
+    owner => 'vagrant',
+    source => '/vagrant/vagrant/bin/.git_completion.sh',
+}
+
 file {'/home/vagrant/.bash_profile':
     owner => 'vagrant',
     content => '
+if [ -f ~/.git_completion.bash ]; then
+  . ~/.git_completion.bash
+fi
+
 # Show git repo branch at bash prompt
 parse_git_branch() {
     git branch 2> /dev/null | sed -e \'/^[^*]/d\' -e \'s/* \(.*\)/(\1)/\'
 }
 PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
+
+# if we got a project in $TLT_PROJECT, activate its virtualenv
+if [[ "$TLT_PROJECT" != "" && -d ~/tlt/$TLT_PROJECT ]]; then
+        workon $TLT_PROJECT
+fi
     ',
 }
