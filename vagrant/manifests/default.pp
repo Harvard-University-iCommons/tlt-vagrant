@@ -1,5 +1,7 @@
 # puppet manifest
 
+include apt
+
 # Make sure the correct directories are in the path:
 Exec {
     path => [
@@ -12,9 +14,45 @@ Exec {
     ],
 }
 
+# add extra apt sources
+apt::source { 'mongodb-apt-source':
+    location => 'http://repo.mongodb.org/apt/ubuntu',
+    release => 'trusty/mongodb-org/3.0',
+    repos => 'multiverse',
+    key => {
+        id => '7F0CEB10',
+        server => 'keyserver.ubuntu.com',
+    },
+}
+
+apt::source { 'postgresql-apt-source':
+    location => 'http://apt.postgresql.org/pub/repos/apt/',
+    release => 'trusty-pgdg',
+    repos => 'main',
+    key => {
+        'id' => 'B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8',
+        'source' => 'https://www.postgresql.org/media/keys/ACCC4CF8.asc',
+    },
+}
+
+apt::source { 'nodesource-apt-source':
+    location => 'https://deb.nodesource.com/node_0.12',
+    release => 'trusty',
+    repos => 'main',
+    key => {
+        'id' => '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280',
+        'source' => 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key',
+    },
+}
+
 # Refresh the catalog of repositories from which packages can be installed:
 exec {'apt-get-update':
-    command => 'apt-get update'
+    command => 'apt-get update',
+    require => [
+        Apt::Source['mongodb-apt-source'],
+        Apt::Source['postgresql-apt-source'],
+        Apt::Source['nodesource-apt-source'],
+    ],
 }
 
 # make sure we have some basic tools and libraries available
@@ -134,15 +172,14 @@ package {'vim':
     require => Exec['apt-get-update'],
 }
 
-exec {'nodesource':
-    command => 'curl -sL https://deb.nodesource.com/setup_0.12 | bash -',
-    creates => '/etc/apt/sources.list.d/nodesource.list',
-    require => Package['curl'],
+package {'htop':
+    ensure => latest,
+    require => Exec['apt-get-update'],
 }
 
 package {'nodejs':
     ensure => latest,
-    require => [Exec['apt-get-update'], Exec['nodesource']],
+    require => Exec['apt-get-update'],
 }
 
 # Install Postgresql
@@ -386,6 +423,11 @@ create_virtualenv {
 create_virtualenv {
     'canvas_course_creation_virtualenv':
         project => 'canvas_course_creation',
+}
+
+create_virtualenv {
+    'canvas_admin_tools':
+        project => 'canvas_admin_tools',
 }
 
 file {'/home/vagrant/.git_completion.sh':
