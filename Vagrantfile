@@ -67,6 +67,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.cpus = 2
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+      # Seems to be required for Ubuntu
+      # https://www.virtualbox.org/manual/ch03.html#settings-processor
+      v.customize ["modifyvm", :id, "--pae", "on"]
   end
 
   # Enable provisioning with Puppet stand alone.  Puppet manifests
