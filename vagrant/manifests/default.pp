@@ -426,8 +426,13 @@ create_virtualenv {
 }
 
 create_virtualenv {
-    'canvas_admin_tools':
-        project => 'canvas_admin_tools',
+    'canvas_account_admin_tools':
+        project => 'canvas_account_admin_tools',
+}
+
+create_virtualenv {
+    'canvas_course_admin_tools':
+        project => 'canvas_course_admin_tools',
 }
 
 file {'/home/vagrant/.git_completion.sh':
