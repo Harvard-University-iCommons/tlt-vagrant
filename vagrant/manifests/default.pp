@@ -351,7 +351,7 @@ file {'/etc/profile.d/venvwrapper.sh':
 }
 
 file {'/home/vagrant/.virtualenvs':
-    ensure => directory,
+    ensure => 'directory',
     owner => 'vagrant',
 }
 
@@ -387,6 +387,7 @@ define create_virtualenv($project) {
             command => "/vagrant/vagrant/bin/venv_bootstrap.sh ${project}",
             creates => "/home/vagrant/.virtualenvs/${project}",
             onlyif => "test -d /home/vagrant/tlt/${project}",
+            timeout => 600,
     }
 }
 
@@ -426,13 +427,18 @@ create_virtualenv {
 }
 
 create_virtualenv {
-    'canvas_account_admin_tools':
+    'canvas_account_admin_tools_virtualenv':
         project => 'canvas_account_admin_tools',
 }
 
 create_virtualenv {
-    'canvas_course_admin_tools':
+    'canvas_course_admin_tools_virtualenv':
         project => 'canvas_course_admin_tools',
+}
+
+create_virtualenv {
+    'icommons_rest_api_virtualenv':
+        project => 'icommons_rest_api',
 }
 
 file {'/home/vagrant/.git_completion.sh':
