@@ -207,6 +207,42 @@ exec {'create-postgresql-db':
     unless => 'sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -wq vagrant',
 }
 
+# ensure the postgresql config allows connections from vagrant host
+# NOTE: this will need updating if we change postgresql minor versions
+
+file {'/etc/postgresql/9.4/main/postgresql.conf':
+    require => Package['postgresql'],
+    ensure => 'present',
+}
+
+file_line {'postgresql-conf-listen':
+    require => [Package['postgresql'],
+                File['/etc/postgresql/9.4/main/postgresql.conf']],
+    path => '/etc/postgresql/9.4/main/postgresql.conf',
+    line => "listen_addresses = '*'",
+    notify => Service['postgresql'],
+}
+
+file {'/etc/postgresql/9.4/main/pg_hba.conf':
+    require => Package['postgresql'],
+    ensure => 'present',
+}
+
+file_line {'pg-hba-conf-listen':
+    require => [Package['postgresql'],
+                File['/etc/postgresql/9.4/main/pg_hba.conf']],
+    path => '/etc/postgresql/9.4/main/pg_hba.conf',
+    line => 'host    all     all     0.0.0.0/0       md5',
+    notify => Service['postgresql'],
+}
+
+service { 'postgresql':
+    ensure => running,
+    enable => true,
+    hasrestart => true,
+    require => Package['postgresql'],
+}
+
 # Install the Oracle instant client
 
 # This is a helper function to retrieve files from URLs:
