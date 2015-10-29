@@ -477,6 +477,11 @@ create_virtualenv {
         project => 'icommons_rest_api',
 }
 
+create_virtualenv {
+    'canvas_course_info_virtualenv':
+        project => 'canvas_course_info',
+}
+
 file {'/home/vagrant/.git_completion.sh':
     owner => 'vagrant',
     source => '/vagrant/vagrant/bin/.git_completion.sh',
