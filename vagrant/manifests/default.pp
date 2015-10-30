@@ -182,6 +182,17 @@ package {'nodejs':
     require => Exec['apt-get-update'],
 }
 
+# needed for selenium tests
+package {'xvfb':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
+package {'firefox':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+
 # Install Postgresql
 package {'postgresql':
     ensure => latest,
