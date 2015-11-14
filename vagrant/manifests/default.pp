@@ -337,9 +337,7 @@ file {'/etc/profile.d/oracle.sh':
 # Install less
 exec {'install_less':
     provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    command => 'sudo npm install -g less',
+    command => 'npm install -g less',
     require => Package['nodejs'],
     creates => '/usr/bin/lessc',
 }
@@ -347,11 +345,17 @@ exec {'install_less':
 # Install coffeescript
 exec {'install_coffeescript':
     provider => 'shell',
-    user => 'vagrant',
-    group => 'vagrant',
-    command => 'sudo npm install -g coffee-script',
+    command => 'npm install -g coffee-script',
     require => Package['nodejs'],
     creates => '/usr/bin/coffee',
+}
+
+# Install karma
+exec {'install_karma_cli':
+    provider => 'shell',
+    command => 'npm install -g karma-cli',
+    require => Package['nodejs'],
+    creates => '/usr/bin/karma',
 }
 
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
