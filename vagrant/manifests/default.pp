@@ -422,7 +422,7 @@ export DJANGO_SETTINGS_MODULE=`basename $VIRTUAL_ENV`.settings.local
     require => File['/home/vagrant/.virtualenvs'],
 }
 
-define create_virtualenv($project) {
+define create_virtualenv($project=$title) {
     exec {
         "create_virtualenv_${project}":
             provider => 'shell',
@@ -442,65 +442,19 @@ define create_virtualenv($project) {
             ],
             command => "/vagrant/vagrant/bin/venv_bootstrap.sh ${project}",
             creates => "/home/vagrant/.virtualenvs/${project}",
-            onlyif => "test -d /home/vagrant/tlt/${project}",
+            onlyif => "test -f /home/vagrant/tlt/${project}/${project}/requirements/local.txt",
             timeout => 600,
     }
 }
 
-create_virtualenv {
-    'icommons_lti_tools_virtualenv':
-        project => 'icommons_lti_tools',
-}
+# Store results of a per-line listing of the tlt directory in a string
+$project_strs = generate("/bin/ls", "-1", "/home/vagrant/tlt")
 
-create_virtualenv {
-    'icommons_tools_virtualenv':
-        project => 'icommons_tools',
-}
+# Convert string to array
+$projects = split($project_strs, "[\n\r]")
 
-create_virtualenv {
-    'icommons_ext_tools_virtualenv':
-        project => 'icommons_ext_tools',
-}
-
-create_virtualenv {
-    'lti_emailer_virtualenv':
-        project => 'lti_emailer',
-}
-
-create_virtualenv {
-    'isites_migration_virtualenv':
-        project => 'isites_migration',
-}
-
-create_virtualenv {
-    'ab_testing_tool_virtualenv':
-        project => 'ab_testing_tool',
-}
-
-create_virtualenv {
-    'canvas_course_creation_virtualenv':
-        project => 'canvas_course_creation',
-}
-
-create_virtualenv {
-    'canvas_account_admin_tools_virtualenv':
-        project => 'canvas_account_admin_tools',
-}
-
-create_virtualenv {
-    'canvas_course_admin_tools_virtualenv':
-        project => 'canvas_course_admin_tools',
-}
-
-create_virtualenv {
-    'icommons_rest_api_virtualenv':
-        project => 'icommons_rest_api',
-}
-
-create_virtualenv {
-    'canvas_course_info_virtualenv':
-        project => 'canvas_course_info',
-}
+# Pass array along to the create_virtualenv function
+create_virtualenv { $projects: }
 
 file {'/home/vagrant/.git_completion.sh':
     owner => 'vagrant',
