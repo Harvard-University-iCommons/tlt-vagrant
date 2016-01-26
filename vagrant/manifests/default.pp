@@ -226,28 +226,28 @@ exec {'create-postgresql-db':
 # ensure the postgresql config allows connections from vagrant host
 # NOTE: this will need updating if we change postgresql minor versions
 
-file {'/etc/postgresql/9.4/main/postgresql.conf':
+file {'/etc/postgresql/9.5/main/postgresql.conf':
     require => Package['postgresql'],
     ensure => 'present',
 }
 
 file_line {'postgresql-conf-listen':
     require => [Package['postgresql'],
-                File['/etc/postgresql/9.4/main/postgresql.conf']],
-    path => '/etc/postgresql/9.4/main/postgresql.conf',
+                File['/etc/postgresql/9.5/main/postgresql.conf']],
+    path => '/etc/postgresql/9.5/main/postgresql.conf',
     line => "listen_addresses = '*'",
     notify => Service['postgresql'],
 }
 
-file {'/etc/postgresql/9.4/main/pg_hba.conf':
+file {'/etc/postgresql/9.5/main/pg_hba.conf':
     require => Package['postgresql'],
     ensure => 'present',
 }
 
 file_line {'pg-hba-conf-listen':
     require => [Package['postgresql'],
-                File['/etc/postgresql/9.4/main/pg_hba.conf']],
-    path => '/etc/postgresql/9.4/main/pg_hba.conf',
+                File['/etc/postgresql/9.5/main/pg_hba.conf']],
+    path => '/etc/postgresql/9.5/main/pg_hba.conf',
     line => 'host    all     all     0.0.0.0/0       md5',
     notify => Service['postgresql'],
 }
