@@ -185,6 +185,13 @@ package {'nodejs':
 package {'ntp':
     ensure => latest,
     require => Exec['apt-get-update'],
+} 
+
+service {'ntp':
+    ensure => running,
+    enable => true,
+    hasrestart => true,
+    require => Package['ntp'],
 }
 
 # needed for selenium tests
@@ -252,7 +259,7 @@ file_line {'pg-hba-conf-listen':
     notify => Service['postgresql'],
 }
 
-service { 'postgresql':
+service {'postgresql':
     ensure => running,
     enable => true,
     hasrestart => true,
