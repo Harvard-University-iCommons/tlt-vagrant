@@ -6,5 +6,4 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 mkvirtualenv -a /home/vagrant/tlt/$1 $1 \
 	&& workon $1 \
-	&& pip install -r /home/vagrant/tlt/${1}/${1}/requirements/local.txt \
-	&& pip install -r /vagrant/vagrant/requirements/base.txt
+	&& pip install -r /home/vagrant/tlt/${1}/${1}/requirements/local.txt
