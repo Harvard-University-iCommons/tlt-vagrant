@@ -107,6 +107,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       shell.inline = "$(sudo puppet module list | grep -q puppetlabs-apt) || sudo puppet module install puppetlabs-apt"
   end
 
+  # install non-broken pip module to fix https issue when pulling 'latest' from pip
+  # see: https://github.com/puppetlabs/puppet/pull/5024
+  config.vm.provision :shell do |shell|
+      shell.inline = "$(sudo puppet module list | grep -q yuav-pip) || sudo puppet module install yuav-pip"
+  end
+
   # Create symlink to vagrant scripts from vagrant's home directory
   config.vm.provision :shell do |shell|
       shell.inline = "ln -fs /vagrant/vagrant/bin/ /home/vagrant/scripts"

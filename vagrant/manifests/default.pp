@@ -396,13 +396,13 @@ file {'/home/vagrant/.ssh/known_hosts':
 
 package {'virtualenv':
     ensure => latest,
-    provider => 'pip',
+    provider => 'yuavpip',
     require => [ Package['python-pip'], ],
 }
 
 package {'virtualenvwrapper':
     ensure => latest,
-    provider => 'pip',
+    provider => 'yuavpip',
     require => [ Package['python-pip'], ],
 }
 
