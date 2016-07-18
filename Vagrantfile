@@ -109,7 +109,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Create symlink to vagrant scripts from vagrant's home directory
   config.vm.provision :shell do |shell|
-      shell.inline = "ln -s /vagrant/vagrant/bin/ /home/vagrant/scripts"
+      shell.inline = "ln -fs /vagrant/vagrant/bin/ /home/vagrant/scripts"
       shell.privileged = false
   end
 
