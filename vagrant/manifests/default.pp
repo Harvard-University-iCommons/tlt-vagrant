@@ -185,7 +185,7 @@ package {'nodejs':
 package {'ntp':
     ensure => latest,
     require => Exec['apt-get-update'],
-} 
+}
 
 service {'ntp':
     ensure => running,
@@ -206,12 +206,15 @@ package {'firefox':
 }
 
 # Install Postgresql
+$pg_major_version = 9.5  # The major version of postgres we're installing
 package {'postgresql':
+    name => "postgresql-$pg_major_version",
     ensure => latest,
     require => Exec['apt-get-update'],
 }
 
 package {'postgresql-contrib':
+    name => "postgresql-contrib-$pg_major_version",
     ensure => latest,
     require => Exec['apt-get-update'],
 }
@@ -233,28 +236,28 @@ exec {'create-postgresql-db':
 # ensure the postgresql config allows connections from vagrant host
 # NOTE: this will need updating if we change postgresql minor versions
 
-file {'/etc/postgresql/9.6/main/postgresql.conf':
+file {"/etc/postgresql/$pg_major_version/main/postgresql.conf":
     require => Package['postgresql'],
     ensure => 'present',
 }
 
 file_line {'postgresql-conf-listen':
     require => [Package['postgresql'],
-                File['/etc/postgresql/9.6/main/postgresql.conf']],
-    path => '/etc/postgresql/9.6/main/postgresql.conf',
+                File["/etc/postgresql/$pg_major_version/main/postgresql.conf"]],
+    path => "/etc/postgresql/$pg_major_version/main/postgresql.conf",
     line => "listen_addresses = '*'",
     notify => Service['postgresql'],
 }
 
-file {'/etc/postgresql/9.6/main/pg_hba.conf':
+file {"/etc/postgresql/$pg_major_version/main/pg_hba.conf":
     require => Package['postgresql'],
     ensure => 'present',
 }
 
 file_line {'pg-hba-conf-listen':
     require => [Package['postgresql'],
-                File['/etc/postgresql/9.6/main/pg_hba.conf']],
-    path => '/etc/postgresql/9.6/main/pg_hba.conf',
+                File["/etc/postgresql/$pg_major_version/main/pg_hba.conf"]],
+    path => "/etc/postgresql/$pg_major_version/main/pg_hba.conf",
     line => 'host    all     all     0.0.0.0/0       md5',
     notify => Service['postgresql'],
 }
