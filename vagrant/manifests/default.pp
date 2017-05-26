@@ -206,7 +206,7 @@ package {'firefox':
 }
 
 # Install Postgresql
-$pg_major_version = 9.5  # The major version of postgres we're installing
+$pg_major_version = 9.6  # The major version of postgres we're installing
 package {'postgresql':
     name => "postgresql-$pg_major_version",
     ensure => latest,
