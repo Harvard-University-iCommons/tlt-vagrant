@@ -104,7 +104,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # install puppet apt modules
   config.vm.provision :shell do |shell|
-      shell.inline = "$(sudo puppet module list | grep -q puppetlabs-apt) || sudo puppet module install puppetlabs-apt"
+      shell.inline = "$(sudo puppet module list | grep -q puppetlabs-apt) || sudo puppet module install puppetlabs-apt --version 2.4.0"
   end
 
   # install non-broken pip module to fix https issue when pulling 'latest' from pip
